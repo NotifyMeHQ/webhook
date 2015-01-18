@@ -12,22 +12,41 @@
 
 namespace NotifyMeHQ\Webhook;
 
-use NotifyMeHQ\NotifyMe\AbstractGateway;
+use GuzzleHttp\Client;
 use NotifyMeHQ\NotifyMe\Arr;
 use NotifyMeHQ\NotifyMe\GatewayInterface;
+use NotifyMeHQ\NotifyMe\HttpGatewayTrait;
 use NotifyMeHQ\NotifyMe\Response;
 
-class WebhookGateway extends AbstractGateway implements GatewayInterface
+class WebhookGateway implements GatewayInterface
 {
+    use HttpGatewayTrait;
+
+    /**
+     * The http client.
+     *
+     * @var \GuzzleHttp\Client
+     */
+    protected $client;
+
+    /**
+     * Configuration options.
+     *
+     * @var string[]
+     */
+    protected $config;
+
     /**
      * Create a new webhook gateway instance.
      *
-     * @param string[] $config
+     * @param \GuzzleHttp\Client $client
+     * @param string[]           $config
      *
      * @return void
      */
-    public function __construct(array $config)
+    public function __construct(Client $client, array $config)
     {
+        $this->client = $client;
         $this->config = $config;
     }
 
@@ -60,7 +79,7 @@ class WebhookGateway extends AbstractGateway implements GatewayInterface
     {
         $success = false;
 
-        $rawResponse = $this->getHttpClient()->{$method}($url, [
+        $rawResponse = $this->client->{$method}($url, [
             'exceptions'      => false,
             'timeout'         => '80',
             'connect_timeout' => '30',

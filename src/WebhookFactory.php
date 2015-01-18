@@ -12,6 +12,8 @@
 
 namespace NotifyMeHQ\Webhook;
 
+use GuzzleHttp\Client;
+use NotifyMeHQ\NotifyMe\Arr;
 use NotifyMeHQ\NotifyMe\FactoryInterface;
 
 class WebhookFactory implements FactoryInterface
@@ -25,6 +27,8 @@ class WebhookFactory implements FactoryInterface
      */
     public function make(array $config)
     {
-        return new WebhookGateway($config);
+        $client = new Client();
+
+        return new WebhookGateway($client, $config);
     }
 }
