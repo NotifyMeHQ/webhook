@@ -20,13 +20,6 @@ use NotifyMeHQ\NotifyMe\Response;
 class WebhookGateway extends AbstractGateway implements GatewayInterface
 {
     /**
-     * Gateway display name.
-     *
-     * @var string
-     */
-    protected $displayName = 'webhook';
-
-    /**
      * Create a new webhook gateway instance.
      *
      * @param string[] $config
