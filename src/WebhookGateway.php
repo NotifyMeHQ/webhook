@@ -62,6 +62,10 @@ class WebhookGateway implements GatewayInterface
     {
         $to = Arr::get($options, 'to', '');
 
+        if (!is_array($message)) {
+            $message = [$message];
+        }
+
         return $this->commit('post', $to, $message);
     }
 
