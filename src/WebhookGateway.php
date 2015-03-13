@@ -13,7 +13,6 @@
 namespace NotifyMeHQ\Webhook;
 
 use GuzzleHttp\Client;
-use NotifyMeHQ\NotifyMe\Arr;
 use NotifyMeHQ\NotifyMe\GatewayInterface;
 use NotifyMeHQ\NotifyMe\HttpGatewayTrait;
 use NotifyMeHQ\NotifyMe\Response;
