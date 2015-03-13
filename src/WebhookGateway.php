@@ -53,15 +53,14 @@ class WebhookGateway implements GatewayInterface
     /**
      * Send a notification.
      *
+     * @param string   $to
      * @param string   $message
      * @param string[] $options
      *
      * @return \NotifyMeHQ\NotifyMe\Response
      */
-    public function notify($message, array $options = [])
+    public function notify($to, $message, array $options = [])
     {
-        $to = Arr::get($options, 'to', '');
-
         if (!is_array($message)) {
             $message = [$message];
         }
