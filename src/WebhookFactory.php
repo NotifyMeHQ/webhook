@@ -12,7 +12,7 @@
 namespace NotifyMeHQ\Webhook;
 
 use GuzzleHttp\Client;
-use NotifyMeHQ\NotifyMe\FactoryInterface;
+use NotifyMeHQ\Contracts\FactoryInterface;
 
 class WebhookFactory implements FactoryInterface
 {
