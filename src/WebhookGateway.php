@@ -21,20 +21,6 @@ class WebhookGateway implements GatewayInterface
     use HttpGatewayTrait;
 
     /**
-     * The http client.
-     *
-     * @var \GuzzleHttp\Client
-     */
-    protected $client;
-
-    /**
-     * Configuration options.
-     *
-     * @var string[]
-     */
-    protected $config;
-
-    /**
      * Create a new webhook gateway instance.
      *
      * @param \GuzzleHttp\Client $client
@@ -51,59 +37,52 @@ class WebhookGateway implements GatewayInterface
     /**
      * Send a notification.
      *
-     * @param string   $to
-     * @param string   $message
-     * @param string[] $options
+     * @param string $to
+     * @param string $message
      *
      * @return \NotifyMeHQ\Contracts\ResponseInterface
      */
-    public function notify($to, $message, array $options = [])
+    public function notify($to, $message)
     {
-        if (!is_array($message)) {
-            $message = [$message];
-        }
-
-        return $this->commit('post', $to, $message);
+        return $this->send($this->buildUrlFromString(), ['to' => $to, 'message' => $message]);
     }
 
     /**
-     * Commit a HTTP request.
+     * Send the notification over the wire.
      *
-     * @param string   $method
      * @param string   $url
      * @param string[] $params
-     * @param string[] $options
      *
-     * @return mixed
+     * @return \NotifyMeHQ\Contracts\ResponseInterface
      */
-    protected function commit($method = 'post', $url, array $params = [], array $options = [])
+    protected function send($url, array $params)
     {
         $success = false;
 
-        $rawResponse = $this->client->{$method}($url, [
+        $rawResponse = $this->client->post($url, [
             'exceptions'      => false,
             'timeout'         => '80',
             'connect_timeout' => '30',
             'headers'         => [
+                'Accept'       => 'application/json',
                 'Content-Type' => 'application/json',
-                'User-Agent'   => 'notifyme-webhook/1.0',
             ],
             'json' => $params,
         ]);
 
         $response = [];
 
-        if ($rawResponse->getStatusCode() == 200) {
+        if (substr((string) $rawResponse->getStatusCode(), 0, 1) === '2') {
             $success = true;
         } else {
-            $response['error'] = $rawResponse->getStatusCode().' Webhook failed delivery';
+            $response['error'] = 'Webhook delivery failed with status code '.$rawResponse->getStatusCode();
         }
 
         return $this->mapResponse($success, $response);
     }
 
     /**
-     * Map HTTP response to response object.
+     * Map the raw response to our response object.
      *
      * @param bool  $success
      * @param array $response
@@ -121,7 +100,7 @@ class WebhookGateway implements GatewayInterface
     /**
      * Get the default json response.
      *
-     * @param string $rawResponse
+     * @param \GuzzleHttp\Message\ResponseInterface $rawResponse
      *
      * @return array
      */
@@ -142,6 +121,6 @@ class WebhookGateway implements GatewayInterface
      */
     protected function getRequestUrl()
     {
-        return $this->endpoint;
+        return $this->config['endpoint'];
     }
 }
